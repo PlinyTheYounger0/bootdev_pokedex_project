@@ -1,4 +1,5 @@
 import { createInterface } from "node:readline";
+import { getCommands } from "./commands.js";
 
 export function cleanInput(input: string): string[] {
     const inputs = input
@@ -20,9 +21,22 @@ export function startREPL(): void {
     rl.on("line", async (input) => {
         const inputs = cleanInput(input);
         if (inputs.length > 0) {
-            const commandName = inputs[0]
-            console.log(`Your command was: ${commandName}`);
-            rl.prompt()
+            const commandName = inputs[0];
+            const commands = getCommands();
+            const command = commands[commandName]
+
+            if (command) {
+                try {
+                    command.callback(commands);
+                } catch (e) {
+                    console.log(e);
+                }
+
+            } else {
+                console.log(`Unknown command: "${commandName}". Type "help" for a list of commands.`)
+            }
+
+            rl.prompt();
         } else {
             rl.prompt;
             return;
