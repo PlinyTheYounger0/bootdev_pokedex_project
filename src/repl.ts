@@ -1,5 +1,4 @@
 import { State } from "./state.js";
-import { getCommands } from "./commands.js";
 
 export function cleanInput(input: string): string[] {
     const inputs = input
@@ -17,11 +16,12 @@ export async function startREPL(state: State) {
         const inputs = cleanInput(input);
         if (inputs.length > 0) {
             const commandName = inputs[0];
+            const args = inputs.slice(1);
             const command = state.commands[commandName]
 
             if (command) {
                 try {
-                    await command.callback(state);
+                    await command.callback(state, ...args);
                 } catch (e) {
                     console.log((e as Error).message);
                 }
